@@ -523,9 +523,9 @@ with col4:
     )
 
 st.info(
-    "V2 adds predicted margins using the validated V1 Elo model. "
-    "Winner prediction remains the core model; margin prediction is experimental "
-    "and currently averages 28.63 points error across the historical backtest."
+    "V3 adds bookmaker odds comparison using manual input or auto-fetched AFL odds. "
+    "The app calculates break-even probability, model edge, expected ROI, value rating, "
+    "and best available bookmaker price where odds data is available."
 )
 # ==========================
 # ROUND SELECTOR
@@ -539,10 +539,13 @@ round_number = st.number_input(
     step=1
 )
 
-odds_api_key = st.text_input(
-    "Odds API Key",
-    type="password"
-)
+try:
+    odds_api_key = st.secrets["ODDS_API_KEY"]
+except Exception:
+    odds_api_key = st.text_input(
+        "Odds API Key",
+        type="password"
+    )
 
 if st.button("Test Odds API"):
     if not odds_api_key:
