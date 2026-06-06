@@ -29,24 +29,25 @@ MARGIN_DIVISOR = 12
 
 USER_AGENT = "Jayden AFL Predictor - jayken305@gmail.com"
 TEAM_NAME_MAP = {
-    "Adelaide": "Adelaide Crows",
-    "Brisbane Lions": "Brisbane Lions",
-    "Carlton": "Carlton Blues",
-    "Collingwood": "Collingwood Magpies",
-    "Essendon": "Essendon Bombers",
-    "Fremantle": "Fremantle Dockers",
-    "Geelong": "Geelong Cats",
-    "Gold Coast": "Gold Coast Suns",
-    "GWS Giants": "GWS Giants",
-    "Hawthorn": "Hawthorn Hawks",
-    "Melbourne": "Melbourne Demons",
-    "North Melbourne": "North Melbourne Kangaroos",
-    "Port Adelaide": "Port Adelaide Power",
-    "Richmond": "Richmond Tigers",
-    "St Kilda": "St Kilda Saints",
-    "Sydney": "Sydney Swans",
-    "West Coast": "West Coast Eagles",
-    "Western Bulldogs": "Western Bulldogs",
+    "Adelaide": ["Adelaide Crows", "Adelaide"],
+    "Brisbane Lions": ["Brisbane Lions", "Brisbane"],
+    "Carlton": ["Carlton Blues", "Carlton"],
+    "Collingwood": ["Collingwood Magpies", "Collingwood"],
+    "Essendon": ["Essendon Bombers", "Essendon"],
+    "Fremantle": ["Fremantle Dockers", "Fremantle"],
+    "Geelong": ["Geelong Cats", "Geelong"],
+    "Gold Coast": ["Gold Coast Suns", "Gold Coast"],
+    "GWS Giants": ["GWS Giants", "Greater Western Sydney Giants", "Greater Western Sydney"],
+    "Greater Western Sydney": ["GWS Giants", "Greater Western Sydney Giants", "Greater Western Sydney"],
+    "Hawthorn": ["Hawthorn Hawks", "Hawthorn"],
+    "Melbourne": ["Melbourne Demons", "Melbourne"],
+    "North Melbourne": ["North Melbourne Kangaroos", "North Melbourne"],
+    "Port Adelaide": ["Port Adelaide Power", "Port Adelaide"],
+    "Richmond": ["Richmond Tigers", "Richmond"],
+    "St Kilda": ["St Kilda Saints", "St Kilda"],
+    "Sydney": ["Sydney Swans", "Sydney"],
+    "West Coast": ["West Coast Eagles", "West Coast"],
+    "Western Bulldogs": ["Western Bulldogs"],
 }
 
 
@@ -313,16 +314,32 @@ def multi_eligible(value_status, risk):
     return "NO"
 
 def find_best_odds_for_tip(odds_data, match_name, tipped_team):
-    odds_team_name = TEAM_NAME_MAP.get(tipped_team, tipped_team)
+    possible_names = TEAM_NAME_MAP.get(
+        tipped_team,
+        [tipped_team]
+    )
+
+    if isinstance(possible_names, str):
+        possible_names = [possible_names]
 
     best_price = None
     best_bookmaker = None
+    matched_name = None
 
     for game in odds_data:
         home_team = game.get("home_team", "")
         away_team = game.get("away_team", "")
 
-        if odds_team_name not in [home_team, away_team]:
+        game_teams = [home_team, away_team]
+
+        matched_team_name = None
+
+        for name in possible_names:
+            if name in game_teams:
+                matched_team_name = name
+                break
+
+        if matched_team_name is None:
             continue
 
         for bookmaker in game.get("bookmakers", []):
@@ -333,12 +350,13 @@ def find_best_odds_for_tip(odds_data, match_name, tipped_team):
                     continue
 
                 for outcome in market.get("outcomes", []):
-                    if outcome.get("name") == odds_team_name:
+                    if outcome.get("name") == matched_team_name:
                         price = outcome.get("price")
 
                         if best_price is None or price > best_price:
                             best_price = price
                             best_bookmaker = bookmaker_name
+                            matched_name = matched_team_name
 
     if best_price is None:
         return None, None
