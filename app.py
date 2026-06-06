@@ -711,6 +711,97 @@ if st.button("Run Predictor"):
             st.warning("No value picks found from the entered odds.")
 
         # --------------------------
+        # VALUE BETS TABLE
+        # --------------------------
+
+        st.subheader("💎 Value Bets Table")
+
+        value_table = df[
+            df["Value Rating"].isin(
+                ["Strong Value", "Value", "Small Edge"]
+            )
+        ].copy()
+
+        value_table = value_table.sort_values(
+            "Expected ROI %",
+            ascending=False
+        )
+
+        if value_table.empty:
+            st.warning("No value bets found from the current odds.")
+        else:
+            value_table = value_table[
+                [
+                    "Final Tip",
+                    "Match",
+                    "Predicted Margin",
+                    "Bookmaker Odds",
+                    "Best Bookmaker",
+                    "Elo Confidence",
+                    "Break Even %",
+                    "Model Edge %",
+                    "Expected ROI %",
+                    "Value Rating",
+                    "Multi Eligible",
+                    "Risk"
+                ]
+            ]
+
+            st.dataframe(
+                value_table,
+                use_container_width=True,
+                hide_index=True
+            )
+
+                    # --------------------------
+        # MULTI BUILDER CANDIDATES
+        # --------------------------
+
+        st.subheader("🧩 Multi Builder Candidates")
+
+        multi_table = df[
+            df["Multi Eligible"] == "YES"
+        ].copy()
+
+        multi_table = multi_table.sort_values(
+            "Expected ROI %",
+            ascending=False
+        )
+
+        if multi_table.empty:
+            st.warning("No multi-eligible selections found.")
+        else:
+            multi_table = multi_table[
+                [
+                    "Final Tip",
+                    "Match",
+                    "Predicted Margin",
+                    "Bookmaker Odds",
+                    "Best Bookmaker",
+                    "Elo Confidence",
+                    "Model Edge %",
+                    "Expected ROI %",
+                    "Value Rating",
+                    "Risk"
+                ]
+            ]
+
+            st.dataframe(
+                multi_table,
+                use_container_width=True,
+                hide_index=True
+            )
+            
+            combined_odds = 1
+
+            for odds in multi_table["Bookmaker Odds"]:
+                combined_odds *= odds
+
+            st.success(
+                f'🧩 Combined Multi Odds: ${combined_odds:.2f}'
+            )
+
+        # --------------------------
         # CLOSEST / BIGGEST MARGIN
         # --------------------------
 
