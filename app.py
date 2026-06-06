@@ -623,7 +623,7 @@ if st.session_state.has_run_predictor:
         for index, row in df.iterrows():
 
             default_odds = 1.50
-            best_bookmaker = "Manual"
+            best_bookmaker = "Manual / No API Match"
 
             if auto_odds_enabled:
                 best_odds, api_bookmaker = find_best_odds_for_tip(

@@ -1,5 +1,4 @@
 Match,Final Tip,Predicted Margin,Raw Margin,Margin Category,Elo Confidence,Edge Score,Home Win %,Away Win %,Squiggle Tip,Squiggle Votes,Risk,Bookmaker Odds,Best Bookmaker,Break Even %,Model Edge %,Expected ROI %,Value Rating,Multi Eligible
-West Coast v Port Adelaide,Port Adelaide,Port Adelaide by less than 1,-0.2,Close Game,50.4,5.5,49.6,50.4,Port Adelaide,1-30,MEDIUM,1.5,Manual,66.7,-16.3,-24.4,No Value,NO
-Sydney v St Kilda,Sydney,Sydney by 25,25.3,Strong Margin,85.1,10.0,85.1,14.9,Sydney,31-0,LOW,1.5,Manual,66.7,18.4,27.6,Strong Value,YES
-Essendon v Carlton,Carlton,Carlton by 8,-8.0,Close Game,63.5,6.9,36.5,63.5,Carlton,0-31,MEDIUM,1.5,Manual,66.7,-3.2,-4.7,No Value,NO
-Collingwood v Melbourne,Collingwood,Collingwood by 6,5.7,Close Game,59.8,6.5,59.8,40.2,Collingwood,26-5,MEDIUM,1.5,Manual,66.7,-6.9,-10.3,No Value,NO
+Sydney v St Kilda,Sydney,Sydney by 25,25.3,Strong Margin,85.1,10.0,85.1,14.9,Sydney,31-0,LOW,1.5,Manual / No API Match,66.7,18.4,27.6,Strong Value,YES
+Essendon v Carlton,Carlton,Carlton by 8,-8.0,Close Game,63.5,6.9,36.5,63.5,Carlton,0-31,MEDIUM,1.5,Manual / No API Match,66.7,-3.2,-4.7,No Value,NO
+Collingwood v Melbourne,Collingwood,Collingwood by 6,5.7,Close Game,59.8,6.5,59.8,40.2,Collingwood,26-5,MEDIUM,1.5,Manual / No API Match,66.7,-6.9,-10.3,No Value,NO
