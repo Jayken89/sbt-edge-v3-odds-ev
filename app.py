@@ -749,57 +749,128 @@ if st.button("Run Predictor"):
 
             st.dataframe(
                 value_table,
-                use_container_width=True,
+                width="stretch",
                 hide_index=True
             )
 
-                    # --------------------------
-        # MULTI BUILDER CANDIDATES
+        # --------------------------
+        # MULTI BUILDER
         # --------------------------
 
-        st.subheader("🧩 Multi Builder Candidates")
+        st.subheader("🧩 Multi Builder")
 
-        multi_table = df[
+        multi_candidates = df[
             df["Multi Eligible"] == "YES"
         ].copy()
 
-        multi_table = multi_table.sort_values(
+        multi_candidates = multi_candidates.sort_values(
             "Expected ROI %",
             ascending=False
         )
 
-        if multi_table.empty:
+        if multi_candidates.empty:
             st.warning("No multi-eligible selections found.")
+
         else:
-            multi_table = multi_table[
-                [
-                    "Final Tip",
-                    "Match",
-                    "Predicted Margin",
-                    "Bookmaker Odds",
-                    "Best Bookmaker",
-                    "Elo Confidence",
-                    "Model Edge %",
-                    "Expected ROI %",
-                    "Value Rating",
-                    "Risk"
-                ]
-            ]
-
-            st.dataframe(
-                multi_table,
-                use_container_width=True,
-                hide_index=True
+            st.caption(
+                "Select which value legs to include. "
+                "Combined probability assumes each leg is independent, so treat it as an estimate only."
             )
-            
-            combined_odds = 1
 
-            for odds in multi_table["Bookmaker Odds"]:
-                combined_odds *= odds
+            selected_rows = []
 
-            st.success(
-                f'🧩 Combined Multi Odds: ${combined_odds:.2f}'
-            )
+            for index, row in multi_candidates.iterrows():
+
+                include_leg = st.checkbox(
+                    f'{row["Final Tip"]} — {row["Predicted Margin"]} '
+                    f'@ ${row["Bookmaker Odds"]:.2f} '
+                    f'({row["Best Bookmaker"]}) | '
+                    f'ROI {row["Expected ROI %"]}% | '
+                    f'{row["Risk"]}',
+                    value=True,
+                    key=f"multi_leg_{index}"
+                )
+
+                if include_leg:
+                    selected_rows.append(row)
+
+            if not selected_rows:
+                st.warning("No legs selected for the multi.")
+
+            else:
+                selected_multi = pd.DataFrame(selected_rows)
+
+                st.dataframe(
+                    selected_multi[
+                        [
+                            "Final Tip",
+                            "Match",
+                            "Predicted Margin",
+                            "Bookmaker Odds",
+                            "Best Bookmaker",
+                            "Elo Confidence",
+                            "Model Edge %",
+                            "Expected ROI %",
+                            "Value Rating",
+                            "Risk"
+                        ]
+                    ],
+                    width="stretch",
+                    hide_index=True
+                )
+
+                combined_odds = 1
+                combined_probability = 1
+
+                for _, row in selected_multi.iterrows():
+                    combined_odds *= row["Bookmaker Odds"]
+                    combined_probability *= row["Elo Confidence"] / 100
+
+                multi_break_even = 1 / combined_odds
+                multi_expected_roi = (
+                    combined_probability * combined_odds
+                ) - 1
+
+                leg_count = len(selected_multi)
+
+                if leg_count <= 2:
+                    multi_risk = "LOW / MEDIUM"
+                elif leg_count <= 4:
+                    multi_risk = "HIGH"
+                else:
+                    multi_risk = "VERY HIGH"
+
+                multi_col1, multi_col2, multi_col3, multi_col4 = st.columns(4)
+
+                with multi_col1:
+                    st.metric(
+                        "Selected Legs",
+                        leg_count
+                    )
+
+                with multi_col2:
+                    st.metric(
+                        "Combined Odds",
+                        f"${combined_odds:.2f}"
+                    )
+
+                with multi_col3:
+                    st.metric(
+                        "Estimated Hit Chance",
+                        f"{combined_probability * 100:.1f}%"
+                    )
+
+                with multi_col4:
+                    st.metric(
+                        "Expected Multi ROI",
+                        f"{multi_expected_roi * 100:.1f}%"
+                    )
+
+                st.warning(
+                    f"Multi Risk: {multi_risk}. "
+                    "Multi probability assumes legs are independent. "
+                    "Real multis can be riskier due to correlation, team news, and variance."
+                )
 
         # --------------------------
         # CLOSEST / BIGGEST MARGIN
