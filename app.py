@@ -1058,3 +1058,61 @@ if st.session_state.has_run_predictor:
         df.to_csv(output_path, index=False)
 
         st.success(f"Saved CSV to {output_path}")
+
+        # --------------------------
+        # BET TRACKER EXPORT
+        # --------------------------
+
+        bet_tracker = df[
+            df["Value Rating"].isin(
+                ["Strong Value", "Value", "Small Edge"]
+            )
+        ].copy()
+
+        bet_tracker["Round"] = round_number
+        bet_tracker["Bet Type"] = "H2H"
+        bet_tracker["Stake"] = ""
+        bet_tracker["Result"] = ""
+        bet_tracker["Profit/Loss"] = ""
+        bet_tracker["Notes"] = ""
+
+        bet_tracker = bet_tracker[
+            [
+                "Round",
+                "Match",
+                "Final Tip",
+                "Bet Type",
+                "Predicted Margin",
+                "Bookmaker Odds",
+                "Best Bookmaker",
+                "Elo Confidence",
+                "Break Even %",
+                "Model Edge %",
+                "Expected ROI %",
+                "Value Rating",
+                "Multi Eligible",
+                "Risk",
+                "Stake",
+                "Result",
+                "Profit/Loss",
+                "Notes"
+            ]
+        ]
+
+        tracker_path = f"outputs/round_{round_number}_bet_tracker.csv"
+
+        bet_tracker.to_csv(
+            tracker_path,
+            index=False
+        )
+
+        st.success(
+            f"Saved Bet Tracker CSV to {tracker_path}"
+        )
+
+        st.download_button(
+            label="Download Bet Tracker CSV",
+            data=bet_tracker.to_csv(index=False),
+            file_name=f"round_{round_number}_bet_tracker.csv",
+            mime="text/csv"
+        )
