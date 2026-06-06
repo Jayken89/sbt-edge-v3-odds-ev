@@ -548,7 +548,11 @@ except Exception:
         "Auto odds will not load until ODDS_API_KEY is added to Streamlit Secrets."
     )
 
+if "predictions_df" not in st.session_state:
+    st.session_state.predictions_df = None
 
+if "has_run_predictor" not in st.session_state:
+    st.session_state.has_run_predictor = False
 
 # ==========================
 # RUN PREDICTOR
@@ -559,7 +563,15 @@ if st.button("Run Predictor"):
     with st.spinner("Running SBT EDGE..."):
         df = make_predictions(round_number)
 
-    if df.empty:
+    st.session_state.predictions_df = df
+    st.session_state.has_run_predictor = True
+
+
+if st.session_state.has_run_predictor:
+
+    df = st.session_state.predictions_df
+
+    if df is None or df.empty:
         st.warning("No upcoming games found for this round.")
 
     else:
