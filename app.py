@@ -542,21 +542,13 @@ round_number = st.number_input(
 try:
     odds_api_key = st.secrets["ODDS_API_KEY"]
 except Exception:
-    odds_api_key = st.text_input(
-        "Odds API Key",
-        type="password"
+    odds_api_key = None
+    st.warning(
+        "Odds API key is not configured. "
+        "Auto odds will not load until ODDS_API_KEY is added to Streamlit Secrets."
     )
 
-if st.button("Test Odds API"):
-    if not odds_api_key:
-        st.warning("Enter your Odds API key first.")
-    else:
-        try:
-            odds_data = fetch_afl_odds(odds_api_key)
-            st.success(f"Odds API working. Found {len(odds_data)} AFL games.")
-            st.json(odds_data[:1])
-        except Exception as e:
-            st.error(f"Odds API error: {e}")
+
 
 # ==========================
 # RUN PREDICTOR
