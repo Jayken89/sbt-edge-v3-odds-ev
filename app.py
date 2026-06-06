@@ -537,7 +537,7 @@ with col3:
 with col4:
     st.metric(
         "Model Version",
-        "V3.0 Odds/EV"
+        "V3.4 bet tracker export"
     )
 
 st.info(
